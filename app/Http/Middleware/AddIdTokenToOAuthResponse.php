@@ -18,13 +18,21 @@ class AddIdTokenToOAuthResponse
 
             // Only for grant_type=authorization_code or password
             if (in_array($request->input('grant_type'), ['authorization_code', 'password'])) {
-                // Get the user (for password grant, username is email)
                 $user = null;
+
                 if ($request->input('grant_type') === 'password') {
                     $user = \App\Models\User::where('email', $request->input('username'))->first();
+                } elseif ($request->input('grant_type') === 'authorization_code' && isset($data['access_token'])) {
+                    // Decode JWT access token to get user_id
+                    $accessToken = $data['access_token'];
+                    $parts = explode('.', $accessToken);
+                    if (count($parts) === 3) {
+                        $payload = json_decode(base64_decode(strtr($parts[1], '-_', '+/')), true);
+                        if (isset($payload['sub'])) {
+                            $user = \App\Models\User::find($payload['sub']);
+                        }
+                    }
                 }
-                // For authorization_code grant, you may need to decode the access token to get the user
-                // This is a simplified version for password grant
 
                 if ($user) {
                     $privateKey = file_get_contents(storage_path('oauth-private.key'));
