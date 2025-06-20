@@ -20,7 +20,7 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            return redirect()->intended('/');
+            return redirect('https://workadv.veem.life/_/global/workadv.veem.life/map-storage/test.tmj');
         }
 
         return back()->withErrors([
