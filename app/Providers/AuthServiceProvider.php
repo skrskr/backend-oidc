@@ -30,5 +30,12 @@ class AuthServiceProvider extends ServiceProvider
             'email' => 'Access email address',
             'payments:write' => 'Create new payments',
         ]);
+
+        Passport::refreshTokensExpireIn(now()->addDays(30));
+
+        Passport::personalAccessTokensExpireIn(now()->addDays(30));
+
+        Passport::tokensExpireIn(now()->addDays(30));
+
     }
 }
