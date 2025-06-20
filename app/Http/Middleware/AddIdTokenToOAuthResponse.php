@@ -5,11 +5,16 @@ namespace App\Http\Middleware;
 use Closure;
 use Firebase\JWT\JWT;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class AddIdTokenToOAuthResponse
 {
     public function handle(Request $request, Closure $next)
     {
+        if ($request->is('oauth/token')) {
+            Log::info('OAuth Token Request Details:', $request->all());
+        }
+
         $response = $next($request);
 
         // Only add id_token for /oauth/token and successful response
@@ -51,6 +56,13 @@ class AddIdTokenToOAuthResponse
                     $response->setData($data);
                 }
             }
+        }
+
+        if ($request->is('oauth/token') && $response->getStatusCode() !== 200) {
+            Log::error('OAuth Token Error Response:', [
+                'status' => $response->getStatusCode(),
+                'content' => json_decode($response->getContent(), true),
+            ]);
         }
 
         return $response;
