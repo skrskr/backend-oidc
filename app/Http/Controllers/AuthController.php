@@ -47,9 +47,9 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
             'organization' => $request->organization,
         ]);
-        Auth::login($user);
+        // Auth::login($user);
 
-        return redirect('/');
+        return redirect('/login');
     }
 
     public function logout(Request $request)

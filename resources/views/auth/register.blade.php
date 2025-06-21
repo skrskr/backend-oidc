@@ -28,5 +28,8 @@
             </div>
             <button type="submit" class="btn btn-primary">Register</button>
         </form>
+        <div class="mt-3">
+            <p>Already have an account? <a href="{{ route('login') }}">Login here</a></p>
+        </div>
     </div>
 @endsection
