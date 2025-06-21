@@ -49,6 +49,9 @@ class AddIdTokenToOAuthResponse
                         'iat' => time(),
                         'email' => $user->email,
                         'name' => $user->name,
+                        'given_name' => $user->name,
+                        'family_name' => '',
+                        'preferred_username' => $user->name,
                         'organization' => $user->organization,
                     ];
                     $id_token = JWT::encode($payload, $privateKey, 'RS256');
