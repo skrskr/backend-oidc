@@ -24,4 +24,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::get('/verify-company', function () {
+    return Inertia::render('Auth/VerifyEmail');
+})->name('verify.company');
+
 require __DIR__.'/auth.php';

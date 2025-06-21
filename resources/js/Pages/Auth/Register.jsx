@@ -38,7 +38,8 @@ export default function Register() {
         })
         .then(response => {
             if (response.data.message === 'Verification email sent, Please check the company email inbox.') {
-                window.location.href = route('login');
+                // Redirect to verification page instead of login
+                window.location.href = route('verify.company');
             } else {
                 console.error('Registration failed:', response.data);
             }
