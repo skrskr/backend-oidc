@@ -131,6 +131,7 @@ export default function Login({ status, canResetPassword }) {
                         onChange={(e) => setData('roleInOffice', e.target.value)}
                         required
                     >
+                        <option value="manager">Manager</option>
                         <option value="member">Member</option>
                         <option value="visitor">Visitor</option>
                     </select>
@@ -164,14 +165,6 @@ export default function Login({ status, canResetPassword }) {
                         </Link>
                     </div>
 
-                    {canResetPassword && (
-                        <Link
-                            href={route('password.request')}
-                            className="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
-                        >
-                            Forgot your password?
-                        </Link>
-                    )}
                 </div>
 
                 <div className="mt-4">

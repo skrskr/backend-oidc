@@ -37,6 +37,8 @@ export default function Register() {
         })
         .then(response => {
             if (response.data.message === 'Verification email sent, Please check the company email inbox.') {
+                // Store company email for verification page
+                localStorage.setItem('verifyCompanyEmail', data.companyEmail);
                 // Redirect to verification page instead of login
                 window.location.href = route('verify.company');
             } else {
@@ -249,9 +251,10 @@ export default function Register() {
                             >
                                 <option value="">Select Role</option>
                                 <option value="admin">Admin</option>
-                                <option value="user">User</option>
-                                <option value="member">Member</option>
-                                <option value="manager">Manager</option>
+                                <option value="ceo">CEO</option>
+                                <option value="employee">Employee</option>
+                                <option value="client">Client</option>
+                                <option value="visitor">Visitor</option>
                             </select>
                             <InputError message={errors.role} className="mt-2" />
                         </div>

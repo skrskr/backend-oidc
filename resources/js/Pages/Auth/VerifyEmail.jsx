@@ -5,7 +5,7 @@ import TextInput from '@/Components/TextInput';
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, useForm } from '@inertiajs/react';
 import axios from 'axios';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function VerifyEmail({ status }) {
     const [verificationResult, setVerificationResult] = useState(null);
@@ -15,6 +15,13 @@ export default function VerifyEmail({ status }) {
         companyEmail: '',
         verificationCode: '',
     });
+
+    useEffect(() => {
+        const storedEmail = localStorage.getItem('verifyCompanyEmail');
+        if (storedEmail) {
+            setData('companyEmail', storedEmail);
+        }
+    }, []);
 
     const submit = (e) => {
         e.preventDefault();
@@ -30,7 +37,7 @@ export default function VerifyEmail({ status }) {
         })
         .then(response => {
             setLoading(false);
-            if (response.data === 'Email verified successfully') {
+            if (response.status === 200) {
                 setVerificationResult({
                     success: true,
                     message: 'Email verified successfully!',
@@ -114,6 +121,7 @@ export default function VerifyEmail({ status }) {
                         isFocused={true}
                         onChange={(e) => setData('companyEmail', e.target.value)}
                         required
+                        disabled={!!data.companyEmail}
                     />
                     <InputError message={errors.companyEmail} className="mt-2" />
                 </div>
@@ -139,14 +147,6 @@ export default function VerifyEmail({ status }) {
                         {loading ? 'Verifying...' : 'Verify Email'}
                     </PrimaryButton>
 
-                    <button
-                        type="button"
-                        onClick={() => post(route('verification.send'))}
-                        disabled={processing}
-                        className="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
-                    >
-                        Resend Verification Email
-                    </button>
                 </div>
             </form>
         </GuestLayout>
