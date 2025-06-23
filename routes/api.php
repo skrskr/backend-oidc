@@ -10,12 +10,12 @@ use Laravel\Passport\Http\Controllers\AccessTokenController;
 //     return $request->user();
 // })->middleware('auth:api');
 
-// Route::get('/.well-known/openid-configuration', [OIDCController::class, 'discovery']);
-// Route::middleware('auth:api')->get('/userinfo', [OIDCController::class, 'userinfo']);
-// Route::get('/oauth/jwks', [OIDCController::class, 'jwks']);
+Route::get('/.well-known/openid-configuration', [OIDCController::class, 'discovery']);
+Route::middleware('auth:api')->get('/userinfo', [OIDCController::class, 'userinfo']);
+Route::get('/oauth/jwks', [OIDCController::class, 'jwks']);
 
 Route::post('/oauth/token', [
-    'middleware' => 'add.id_token',
+    // 'middleware' => 'add.id_token',
     'uses' => AccessTokenController::class.'@issueToken',
 ]);
 
