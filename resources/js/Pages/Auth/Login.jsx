@@ -48,7 +48,7 @@ export default function Login({ status, canResetPassword }) {
 
             // Redirect to dashboard after successful login
             setTimeout(() => {
-                window.location.href = route('dashboard');
+                window.location.href = "https://workadv.veem.life/_/global/workadv.veem.life/map-storage/test.tmj";
             }, 1000);
         })
         .catch(error => {
