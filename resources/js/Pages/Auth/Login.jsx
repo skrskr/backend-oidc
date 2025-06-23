@@ -4,62 +4,24 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
-import axios from 'axios';
 import { useState } from 'react';
 
 export default function Login({ status, canResetPassword }) {
-    const [loginResult, setLoginResult] = useState(null);
-    const [loading, setLoading] = useState(false);
-
-    const { data, setData, post, processing, errors, reset } = useForm({
+    const { data, setData, processing, errors } = useForm({
         emailOrUsername: '',
         password: '',
-        roleInOffice: 'member', // Default to member
+        roleInOffice: 'member',
         companyName: '',
     });
 
-    const submit = (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setLoginResult(null);
-
-        // Call local Laravel proxy API for login
-        axios.post('/api/immrsa/auth/login', data, {
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            }
-        })
-        .then(response => {
-            setLoading(false);
-            const { accessToken, company, user } = response.data;
-
-            // Store the access token and user data
-            localStorage.setItem('accessToken', accessToken);
-            localStorage.setItem('userData', JSON.stringify(user));
-            localStorage.setItem('companyData', JSON.stringify(company));
-
-            setLoginResult({
-                success: true,
-                message: 'Login successful!',
-                user: user,
-                company: company
-            });
-
-            // Redirect to dashboard after successful login
-            setTimeout(() => {
-                window.location.href = "https://workadv.veem.life/_/global/workadv.veem.life/map-storage/test.tmj";
-            }, 1000);
-        })
-        .catch(error => {
-            setLoading(false);
-            console.error('Login error:', error);
-            setLoginResult({
-                success: false,
-                message: error.response?.data?.message || 'Login failed. Please check your credentials.'
-            });
-        });
-    };
+    // OIDC params for redirect after login
+    const oidcParams = new URLSearchParams({
+        client_id: '2',
+        scope: 'openid profile email',
+        response_type: 'code',
+        redirect_uri: 'https://workadv.veem.life/openid-callback',
+        code_challenge_method: 'S256',
+    }).toString();
 
     return (
         <GuestLayout>
@@ -71,25 +33,8 @@ export default function Login({ status, canResetPassword }) {
                 </div>
             )}
 
-            {loginResult && (
-                <div className={`mb-4 p-4 rounded-md ${
-                    loginResult.success
-                        ? 'bg-green-100 text-green-700 border border-green-200'
-                        : 'bg-red-100 text-red-700 border border-red-200'
-                }`}>
-                    {loginResult.message}
-
-                    {loginResult.success && loginResult.user && (
-                        <div className="mt-3">
-                            <h4 className="font-semibold">Welcome, {loginResult.user.firstName} {loginResult.user.lastName}!</h4>
-                            <p>Role: {loginResult.user.role}</p>
-                            <p>Company: {loginResult.company?.name}</p>
-                        </div>
-                    )}
-                </div>
-            )}
-
-            <form onSubmit={submit}>
+            <form method="POST" action={`/immrsa/auth/login?${oidcParams}`}>
+                <input type="hidden" name="_token" value={window.Laravel?.csrfToken || document.querySelector('meta[name=csrf-token]')?.content} />
                 <div>
                     <InputLabel htmlFor="emailOrUsername" value="Email or Username" />
                     <TextInput
@@ -100,7 +45,7 @@ export default function Login({ status, canResetPassword }) {
                         className="mt-1 block w-full"
                         autoComplete="username"
                         isFocused={true}
-                        onChange={(e) => setData('emailOrUsername', e.target.value)}
+                        onChange={e => setData('emailOrUsername', e.target.value)}
                         required
                     />
                     <InputError message={errors.emailOrUsername} className="mt-2" />
@@ -115,7 +60,7 @@ export default function Login({ status, canResetPassword }) {
                         value={data.password}
                         className="mt-1 block w-full"
                         autoComplete="current-password"
-                        onChange={(e) => setData('password', e.target.value)}
+                        onChange={e => setData('password', e.target.value)}
                         required
                     />
                     <InputError message={errors.password} className="mt-2" />
@@ -128,10 +73,9 @@ export default function Login({ status, canResetPassword }) {
                         name="roleInOffice"
                         value={data.roleInOffice}
                         className="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
-                        onChange={(e) => setData('roleInOffice', e.target.value)}
+                        onChange={e => setData('roleInOffice', e.target.value)}
                         required
                     >
-                        <option value="manager">Manager</option>
                         <option value="member">Member</option>
                         <option value="visitor">Visitor</option>
                     </select>
@@ -147,7 +91,7 @@ export default function Login({ status, canResetPassword }) {
                             name="companyName"
                             value={data.companyName}
                             className="mt-1 block w-full"
-                            onChange={(e) => setData('companyName', e.target.value)}
+                            onChange={e => setData('companyName', e.target.value)}
                             required={data.roleInOffice === 'visitor'}
                             placeholder="Enter the company name you are visiting"
                         />
@@ -165,11 +109,19 @@ export default function Login({ status, canResetPassword }) {
                         </Link>
                     </div>
 
+                    {canResetPassword && (
+                        <Link
+                            href={route('password.request')}
+                            className="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
+                        >
+                            Forgot your password?
+                        </Link>
+                    )}
                 </div>
 
                 <div className="mt-4">
-                    <PrimaryButton className="w-full" disabled={processing || loading}>
-                        {loading ? 'Logging in...' : 'Log in'}
+                    <PrimaryButton className="w-full" disabled={processing}>
+                        Log in
                     </PrimaryButton>
                 </div>
             </form>
