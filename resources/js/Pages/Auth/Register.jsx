@@ -28,13 +28,12 @@ export default function Register() {
     const submit = (e) => {
         e.preventDefault();
 
-        // Call external API service using axios
-        axios.post('https://backend.immrsa.io/api/immrsa/auth/signup', data, {
+        // Call local Laravel proxy API
+        axios.post('/api/immrsa/auth/signup', data, {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
-            },
-            withCredentials: true
+            }
         })
         .then(response => {
             if (response.data.message === 'Verification email sent, Please check the company email inbox.') {
@@ -251,6 +250,7 @@ export default function Register() {
                                 <option value="">Select Role</option>
                                 <option value="admin">Admin</option>
                                 <option value="user">User</option>
+                                <option value="member">Member</option>
                                 <option value="manager">Manager</option>
                             </select>
                             <InputError message={errors.role} className="mt-2" />

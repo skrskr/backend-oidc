@@ -21,13 +21,12 @@ export default function VerifyEmail({ status }) {
         setLoading(true);
         setVerificationResult(null);
 
-        // Call external API for company verification
-        axios.post('https://backend.immrsa.io/api/immrsa/auth/verify', data, {
+        // Call local Laravel proxy API for company verification
+        axios.post('/api/immrsa/auth/verify', data, {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
-            },
-            withCredentials: true
+            }
         })
         .then(response => {
             setLoading(false);

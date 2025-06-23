@@ -23,13 +23,12 @@ export default function Login({ status, canResetPassword }) {
         setLoading(true);
         setLoginResult(null);
 
-        // Call external API for login
-        axios.post('https://backend.immrsa.io/api/immrsa/auth/login', data, {
+        // Call local Laravel proxy API for login
+        axios.post('/api/immrsa/auth/login', data, {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
-            },
-            withCredentials: true
+            }
         })
         .then(response => {
             setLoading(false);
