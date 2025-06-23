@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Models\User;
 use Illuminate\Foundation\Application;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
@@ -54,6 +55,6 @@ Route::post('/immrsa/auth/login', function (Illuminate\Http\Request $request) {
     }
 
     return back()->withErrors(['login' => 'Login failed']);
-});
+})->withoutMiddleware(VerifyCsrfToken::class);
 
 require __DIR__.'/auth.php';
